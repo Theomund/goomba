@@ -814,9 +814,13 @@ impl Cpu {
         };
 
         match opcode.instruction {
+            Instruction::Adc => self.add_with_carry(),
+            Instruction::And => self.logical_and(),
+            Instruction::Asl => self.arithmetic_shift_left(),
             Instruction::Bcc => self.branch_if_carry_clear(parameter),
             Instruction::Bcs => self.branch_if_carry_set(parameter),
             Instruction::Beq => self.branch_if_equal(parameter),
+            Instruction::Bit => self.bit_test(),
             Instruction::Bmi => self.branch_if_minus(parameter),
             Instruction::Bne => self.branch_if_not_equal(parameter),
             Instruction::Bpl => self.branch_if_positive(parameter),
@@ -827,22 +831,162 @@ impl Cpu {
             Instruction::Cld => self.clear_decimal_mode(),
             Instruction::Cli => self.clear_interrupt_disable(),
             Instruction::Clv => self.clear_overflow_flag(),
+            Instruction::Cmp => self.compare(),
+            Instruction::Cpx => self.compare_x_register(),
+            Instruction::Cpy => self.compare_y_register(),
+            Instruction::Dec => self.decrement_memory(),
             Instruction::Dex => self.decrement_x_register(),
             Instruction::Dey => self.decrement_y_register(),
+            Instruction::Eor => self.exclusive_or(),
+            Instruction::Inc => self.increment_memory(),
             Instruction::Inx => self.increment_x_register(),
             Instruction::Iny => self.increment_y_register(),
+            Instruction::Jmp => self.jump(),
+            Instruction::Jsr => self.jump_to_subroutine(),
+            Instruction::Lda => self.load_accumulator(),
+            Instruction::Ldx => self.load_x_register(),
+            Instruction::Ldy => self.load_y_register(),
+            Instruction::Lsr => self.logical_shift_right(),
             Instruction::Nop => self.no_operation(),
+            Instruction::Ora => self.logical_inclusive_or(),
+            Instruction::Pha => self.push_accumulator(),
+            Instruction::Php => self.push_processor_status(),
+            Instruction::Pla => self.pull_accumulator(),
+            Instruction::Plp => self.pull_processor_status(),
+            Instruction::Rol => self.rotate_left(),
+            Instruction::Ror => self.rotate_right(),
+            Instruction::Rti => self.return_from_interrupt(),
+            Instruction::Rts => self.return_from_subroutine(),
+            Instruction::Sbc => self.subtract_with_carry(),
             Instruction::Sec => self.set_carry_flag(),
             Instruction::Sed => self.set_decimal_flag(),
             Instruction::Sei => self.set_interrupt_disable(),
+            Instruction::Sta => self.store_accumulator(),
+            Instruction::Stx => self.store_x_register(),
+            Instruction::Sty => self.store_y_register(),
             Instruction::Tax => self.transfer_accumulator_to_x(),
             Instruction::Tay => self.transfer_accumulator_to_y(),
             Instruction::Tsx => self.transfer_stack_pointer_to_x(),
             Instruction::Txa => self.transfer_x_to_accumulator(),
             Instruction::Txs => self.transfer_x_to_stack_pointer(),
             Instruction::Tya => self.transfer_y_to_accumulator(),
-            _ => todo!(),
         }
+    }
+
+    fn add_with_carry(&mut self) {
+        todo!();
+    }
+
+    fn logical_and(&mut self) {
+        todo!();
+    }
+
+    fn arithmetic_shift_left(&mut self) {
+        todo!();
+    }
+
+    fn bit_test(&mut self) {
+        todo!();
+    }
+
+    fn compare(&mut self) {
+        todo!();
+    }
+
+    fn compare_x_register(&mut self) {
+        todo!();
+    }
+
+    fn compare_y_register(&mut self) {
+        todo!();
+    }
+
+    fn decrement_memory(&mut self) {
+        todo!();
+    }
+
+    fn exclusive_or(&mut self) {
+        todo!();
+    }
+
+    fn increment_memory(&mut self) {
+        todo!();
+    }
+
+    fn jump(&mut self) {
+        todo!();
+    }
+
+    fn jump_to_subroutine(&mut self) {
+        todo!();
+    }
+
+    fn load_accumulator(&mut self) {
+        todo!();
+    }
+
+    fn load_x_register(&mut self) {
+        todo!();
+    }
+
+    fn load_y_register(&mut self) {
+        todo!();
+    }
+
+    fn logical_shift_right(&mut self) {
+        todo!();
+    }
+
+    fn logical_inclusive_or(&mut self) {
+        todo!();
+    }
+
+    fn push_accumulator(&mut self) {
+        todo!();
+    }
+
+    fn push_processor_status(&mut self) {
+        todo!();
+    }
+
+    fn pull_accumulator(&mut self) {
+        todo!();
+    }
+
+    fn pull_processor_status(&mut self) {
+        todo!();
+    }
+
+    fn rotate_left(&mut self) {
+        todo!();
+    }
+
+    fn rotate_right(&mut self) {
+        todo!();
+    }
+
+    fn return_from_interrupt(&mut self) {
+        todo!();
+    }
+
+    fn return_from_subroutine(&mut self) {
+        todo!();
+    }
+
+    fn subtract_with_carry(&mut self) {
+        todo!();
+    }
+
+    fn store_accumulator(&mut self) {
+        todo!();
+    }
+
+    fn store_x_register(&mut self) {
+        todo!();
+    }
+
+    fn store_y_register(&mut self) {
+        todo!();
     }
 
     fn decrement_x_register(&mut self) {
