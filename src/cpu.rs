@@ -139,6 +139,12 @@ impl Cpu {
                 bytes: 2,
                 cycles: 5,
             },
+            0x08 => Opcode {
+                instruction: Instruction::Php,
+                mode: AddressingMode::Implicit,
+                bytes: 1,
+                cycles: 3,
+            },
             0x09 => Opcode {
                 instruction: Instruction::Ora,
                 mode: AddressingMode::Immediate,
@@ -177,7 +183,7 @@ impl Cpu {
             },
             0x15 => Opcode {
                 instruction: Instruction::Ora,
-                mode: AddressingMode::ZeroPage,
+                mode: AddressingMode::ZeroPageX,
                 bytes: 2,
                 cycles: 4,
             },
@@ -235,10 +241,28 @@ impl Cpu {
                 bytes: 2,
                 cycles: 3,
             },
+            0x26 => Opcode {
+                instruction: Instruction::Rol,
+                mode: AddressingMode::ZeroPage,
+                bytes: 2,
+                cycles: 5,
+            },
+            0x28 => Opcode {
+                instruction: Instruction::Plp,
+                mode: AddressingMode::Implicit,
+                bytes: 1,
+                cycles: 4,
+            },
             0x29 => Opcode {
                 instruction: Instruction::And,
                 mode: AddressingMode::Immediate,
                 bytes: 2,
+                cycles: 2,
+            },
+            0x2A => Opcode {
+                instruction: Instruction::Rol,
+                mode: AddressingMode::Accumulator,
+                bytes: 1,
                 cycles: 2,
             },
             0x2C => Opcode {
@@ -252,6 +276,12 @@ impl Cpu {
                 mode: AddressingMode::Absolute,
                 bytes: 3,
                 cycles: 4,
+            },
+            0x2E => Opcode {
+                instruction: Instruction::Rol,
+                mode: AddressingMode::Absolute,
+                bytes: 3,
+                cycles: 6,
             },
             0x30 => Opcode {
                 instruction: Instruction::Bmi,
@@ -271,6 +301,12 @@ impl Cpu {
                 bytes: 2,
                 cycles: 4,
             },
+            0x36 => Opcode {
+                instruction: Instruction::Rol,
+                mode: AddressingMode::ZeroPageX,
+                bytes: 2,
+                cycles: 6,
+            },
             0x38 => Opcode {
                 instruction: Instruction::Sec,
                 mode: AddressingMode::Implicit,
@@ -289,6 +325,18 @@ impl Cpu {
                 bytes: 3,
                 cycles: 4,
             },
+            0x3E => Opcode {
+                instruction: Instruction::Rol,
+                mode: AddressingMode::AbsoluteX,
+                bytes: 3,
+                cycles: 7,
+            },
+            0x40 => Opcode {
+                instruction: Instruction::Rti,
+                mode: AddressingMode::Implicit,
+                bytes: 1,
+                cycles: 6,
+            },
             0x41 => Opcode {
                 instruction: Instruction::Eor,
                 mode: AddressingMode::IndexedIndirect,
@@ -306,6 +354,12 @@ impl Cpu {
                 mode: AddressingMode::ZeroPage,
                 bytes: 2,
                 cycles: 5,
+            },
+            0x48 => Opcode {
+                instruction: Instruction::Pha,
+                mode: AddressingMode::Implicit,
+                bytes: 1,
+                cycles: 3,
             },
             0x49 => Opcode {
                 instruction: Instruction::Eor,
@@ -385,6 +439,12 @@ impl Cpu {
                 bytes: 3,
                 cycles: 7,
             },
+            0x60 => Opcode {
+                instruction: Instruction::Rts,
+                mode: AddressingMode::Implicit,
+                bytes: 1,
+                cycles: 6,
+            },
             0x61 => Opcode {
                 instruction: Instruction::Adc,
                 mode: AddressingMode::IndexedIndirect,
@@ -397,10 +457,28 @@ impl Cpu {
                 bytes: 2,
                 cycles: 3,
             },
+            0x66 => Opcode {
+                instruction: Instruction::Ror,
+                mode: AddressingMode::ZeroPage,
+                bytes: 2,
+                cycles: 5,
+            },
+            0x68 => Opcode {
+                instruction: Instruction::Pla,
+                mode: AddressingMode::Implicit,
+                bytes: 1,
+                cycles: 4,
+            },
             0x69 => Opcode {
                 instruction: Instruction::Adc,
                 mode: AddressingMode::Immediate,
                 bytes: 2,
+                cycles: 2,
+            },
+            0x6A => Opcode {
+                instruction: Instruction::Ror,
+                mode: AddressingMode::Accumulator,
+                bytes: 1,
                 cycles: 2,
             },
             0x6C => Opcode {
@@ -414,6 +492,12 @@ impl Cpu {
                 mode: AddressingMode::Absolute,
                 bytes: 3,
                 cycles: 4,
+            },
+            0x6E => Opcode {
+                instruction: Instruction::Ror,
+                mode: AddressingMode::Absolute,
+                bytes: 3,
+                cycles: 6,
             },
             0x70 => Opcode {
                 instruction: Instruction::Bvs,
@@ -433,6 +517,12 @@ impl Cpu {
                 bytes: 2,
                 cycles: 4,
             },
+            0x76 => Opcode {
+                instruction: Instruction::Ror,
+                mode: AddressingMode::ZeroPageX,
+                bytes: 2,
+                cycles: 6,
+            },
             0x78 => Opcode {
                 instruction: Instruction::Sei,
                 mode: AddressingMode::Implicit,
@@ -451,6 +541,36 @@ impl Cpu {
                 bytes: 3,
                 cycles: 4,
             },
+            0x7E => Opcode {
+                instruction: Instruction::Ror,
+                mode: AddressingMode::AbsoluteX,
+                bytes: 3,
+                cycles: 7,
+            },
+            0x81 => Opcode {
+                instruction: Instruction::Sta,
+                mode: AddressingMode::IndexedIndirect,
+                bytes: 2,
+                cycles: 6,
+            },
+            0x84 => Opcode {
+                instruction: Instruction::Sty,
+                mode: AddressingMode::ZeroPage,
+                bytes: 2,
+                cycles: 3,
+            },
+            0x85 => Opcode {
+                instruction: Instruction::Sta,
+                mode: AddressingMode::ZeroPage,
+                bytes: 2,
+                cycles: 3,
+            },
+            0x86 => Opcode {
+                instruction: Instruction::Stx,
+                mode: AddressingMode::ZeroPage,
+                bytes: 2,
+                cycles: 3,
+            },
             0x88 => Opcode {
                 instruction: Instruction::Dey,
                 mode: AddressingMode::Implicit,
@@ -463,11 +583,53 @@ impl Cpu {
                 bytes: 1,
                 cycles: 2,
             },
+            0x8C => Opcode {
+                instruction: Instruction::Sty,
+                mode: AddressingMode::Absolute,
+                bytes: 3,
+                cycles: 4,
+            },
+            0x8D => Opcode {
+                instruction: Instruction::Sta,
+                mode: AddressingMode::Absolute,
+                bytes: 3,
+                cycles: 4,
+            },
+            0x8E => Opcode {
+                instruction: Instruction::Stx,
+                mode: AddressingMode::Absolute,
+                bytes: 3,
+                cycles: 4,
+            },
             0x90 => Opcode {
                 instruction: Instruction::Bcc,
                 mode: AddressingMode::Relative,
                 bytes: 2,
                 cycles: 2,
+            },
+            0x91 => Opcode {
+                instruction: Instruction::Sta,
+                mode: AddressingMode::IndirectIndexed,
+                bytes: 2,
+                cycles: 6,
+            },
+            0x94 => Opcode {
+                instruction: Instruction::Sty,
+                mode: AddressingMode::ZeroPageX,
+                bytes: 2,
+                cycles: 4,
+            },
+            0x95 => Opcode {
+                instruction: Instruction::Sta,
+                mode: AddressingMode::ZeroPageX,
+                bytes: 2,
+                cycles: 4,
+            },
+            0x96 => Opcode {
+                instruction: Instruction::Stx,
+                mode: AddressingMode::ZeroPageX,
+                bytes: 2,
+                cycles: 4,
             },
             0x98 => Opcode {
                 instruction: Instruction::Tya,
@@ -475,11 +637,23 @@ impl Cpu {
                 bytes: 1,
                 cycles: 2,
             },
+            0x99 => Opcode {
+                instruction: Instruction::Sta,
+                mode: AddressingMode::AbsoluteY,
+                bytes: 3,
+                cycles: 5,
+            },
             0x9A => Opcode {
                 instruction: Instruction::Txs,
                 mode: AddressingMode::Implicit,
                 bytes: 1,
                 cycles: 2,
+            },
+            0x9D => Opcode {
+                instruction: Instruction::Sta,
+                mode: AddressingMode::AbsoluteX,
+                bytes: 3,
+                cycles: 5,
             },
             0xA0 => Opcode {
                 instruction: Instruction::Ldy,
@@ -739,8 +913,20 @@ impl Cpu {
                 bytes: 2,
                 cycles: 2,
             },
+            0xE1 => Opcode {
+                instruction: Instruction::Sbc,
+                mode: AddressingMode::IndexedIndirect,
+                bytes: 2,
+                cycles: 6,
+            },
             0xE4 => Opcode {
                 instruction: Instruction::Cpx,
+                mode: AddressingMode::ZeroPage,
+                bytes: 2,
+                cycles: 3,
+            },
+            0xE5 => Opcode {
+                instruction: Instruction::Sbc,
                 mode: AddressingMode::ZeroPage,
                 bytes: 2,
                 cycles: 3,
@@ -757,6 +943,12 @@ impl Cpu {
                 bytes: 1,
                 cycles: 2,
             },
+            0xE9 => Opcode {
+                instruction: Instruction::Sbc,
+                mode: AddressingMode::Immediate,
+                bytes: 2,
+                cycles: 2,
+            },
             0xEA => Opcode {
                 instruction: Instruction::Nop,
                 mode: AddressingMode::Implicit,
@@ -765,6 +957,12 @@ impl Cpu {
             },
             0xEC => Opcode {
                 instruction: Instruction::Cpx,
+                mode: AddressingMode::Absolute,
+                bytes: 3,
+                cycles: 4,
+            },
+            0xED => Opcode {
+                instruction: Instruction::Sbc,
                 mode: AddressingMode::Absolute,
                 bytes: 3,
                 cycles: 4,
@@ -781,6 +979,18 @@ impl Cpu {
                 bytes: 2,
                 cycles: 2,
             },
+            0xF1 => Opcode {
+                instruction: Instruction::Sbc,
+                mode: AddressingMode::IndirectIndexed,
+                bytes: 2,
+                cycles: 5,
+            },
+            0xF5 => Opcode {
+                instruction: Instruction::Sbc,
+                mode: AddressingMode::ZeroPageX,
+                bytes: 2,
+                cycles: 4,
+            },
             0xF6 => Opcode {
                 instruction: Instruction::Inc,
                 mode: AddressingMode::ZeroPageX,
@@ -792,6 +1002,18 @@ impl Cpu {
                 mode: AddressingMode::Implicit,
                 bytes: 1,
                 cycles: 2,
+            },
+            0xF9 => Opcode {
+                instruction: Instruction::Sbc,
+                mode: AddressingMode::AbsoluteY,
+                bytes: 3,
+                cycles: 4,
+            },
+            0xFD => Opcode {
+                instruction: Instruction::Sbc,
+                mode: AddressingMode::AbsoluteX,
+                bytes: 3,
+                cycles: 4,
             },
             0xFE => Opcode {
                 instruction: Instruction::Inc,
