@@ -627,7 +627,7 @@ impl Cpu {
             },
             0x96 => Opcode {
                 instruction: Instruction::Stx,
-                mode: AddressingMode::ZeroPageX,
+                mode: AddressingMode::ZeroPageY,
                 bytes: 2,
                 cycles: 4,
             },
@@ -753,7 +753,7 @@ impl Cpu {
             },
             0xB6 => Opcode {
                 instruction: Instruction::Ldx,
-                mode: AddressingMode::ZeroPageX,
+                mode: AddressingMode::ZeroPageY,
                 bytes: 2,
                 cycles: 4,
             },
