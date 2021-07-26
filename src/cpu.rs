@@ -1026,29 +1026,33 @@ impl Cpu {
     }
 
     fn execute(&mut self, opcode: Opcode) {
-        let parameter = match opcode.mode {
+        let operand = match opcode.mode {
             AddressingMode::Implicit => 0,
-            AddressingMode::Relative => {
+            AddressingMode::Immediate => {
                 self.program_counter += 1;
                 self.memory[self.program_counter as usize]
+            }
+            AddressingMode::ZeroPage => {
+                self.program_counter += 1;
+                self.memory[(self.program_counter % 0xFF) as usize]
             }
             _ => todo!(),
         };
 
         match opcode.instruction {
             Instruction::Adc => self.add_with_carry(),
-            Instruction::And => self.logical_and(),
+            Instruction::And => self.logical_and(operand),
             Instruction::Asl => self.arithmetic_shift_left(),
-            Instruction::Bcc => self.branch_if_carry_clear(parameter),
-            Instruction::Bcs => self.branch_if_carry_set(parameter),
-            Instruction::Beq => self.branch_if_equal(parameter),
+            Instruction::Bcc => self.branch_if_carry_clear(operand),
+            Instruction::Bcs => self.branch_if_carry_set(operand),
+            Instruction::Beq => self.branch_if_equal(operand),
             Instruction::Bit => self.bit_test(),
-            Instruction::Bmi => self.branch_if_minus(parameter),
-            Instruction::Bne => self.branch_if_not_equal(parameter),
-            Instruction::Bpl => self.branch_if_positive(parameter),
+            Instruction::Bmi => self.branch_if_minus(operand),
+            Instruction::Bne => self.branch_if_not_equal(operand),
+            Instruction::Bpl => self.branch_if_positive(operand),
             Instruction::Brk => self.force_interrupt(),
-            Instruction::Bvc => self.branch_if_overflow_clear(parameter),
-            Instruction::Bvs => self.branch_if_overflow_set(parameter),
+            Instruction::Bvc => self.branch_if_overflow_clear(operand),
+            Instruction::Bvs => self.branch_if_overflow_set(operand),
             Instruction::Clc => self.clear_carry_flag(),
             Instruction::Cld => self.clear_decimal_mode(),
             Instruction::Cli => self.clear_interrupt_disable(),
@@ -1056,21 +1060,21 @@ impl Cpu {
             Instruction::Cmp => self.compare(),
             Instruction::Cpx => self.compare_x_register(),
             Instruction::Cpy => self.compare_y_register(),
-            Instruction::Dec => self.decrement_memory(),
+            Instruction::Dec => self.decrement_memory(operand),
             Instruction::Dex => self.decrement_x_register(),
             Instruction::Dey => self.decrement_y_register(),
-            Instruction::Eor => self.exclusive_or(),
-            Instruction::Inc => self.increment_memory(),
+            Instruction::Eor => self.exclusive_or(operand),
+            Instruction::Inc => self.increment_memory(operand),
             Instruction::Inx => self.increment_x_register(),
             Instruction::Iny => self.increment_y_register(),
-            Instruction::Jmp => self.jump(),
+            Instruction::Jmp => self.jump(operand),
             Instruction::Jsr => self.jump_to_subroutine(),
-            Instruction::Lda => self.load_accumulator(),
-            Instruction::Ldx => self.load_x_register(),
-            Instruction::Ldy => self.load_y_register(),
+            Instruction::Lda => self.load_accumulator(operand),
+            Instruction::Ldx => self.load_x_register(operand),
+            Instruction::Ldy => self.load_y_register(operand),
             Instruction::Lsr => self.logical_shift_right(),
             Instruction::Nop => self.no_operation(),
-            Instruction::Ora => self.logical_inclusive_or(),
+            Instruction::Ora => self.logical_inclusive_or(operand),
             Instruction::Pha => self.push_accumulator(),
             Instruction::Php => self.push_processor_status(),
             Instruction::Pla => self.pull_accumulator(),
@@ -1083,9 +1087,9 @@ impl Cpu {
             Instruction::Sec => self.set_carry_flag(),
             Instruction::Sed => self.set_decimal_flag(),
             Instruction::Sei => self.set_interrupt_disable(),
-            Instruction::Sta => self.store_accumulator(),
-            Instruction::Stx => self.store_x_register(),
-            Instruction::Sty => self.store_y_register(),
+            Instruction::Sta => self.store_accumulator(operand),
+            Instruction::Stx => self.store_x_register(operand),
+            Instruction::Sty => self.store_y_register(operand),
             Instruction::Tax => self.transfer_accumulator_to_x(),
             Instruction::Tay => self.transfer_accumulator_to_y(),
             Instruction::Tsx => self.transfer_stack_pointer_to_x(),
@@ -1093,14 +1097,18 @@ impl Cpu {
             Instruction::Txs => self.transfer_x_to_stack_pointer(),
             Instruction::Tya => self.transfer_y_to_accumulator(),
         }
+
+        self.program_counter += 1;
     }
 
     fn add_with_carry(&mut self) {
         todo!();
     }
 
-    fn logical_and(&mut self) {
-        todo!();
+    fn logical_and(&mut self, operand: u8) {
+        self.accumulator &= operand;
+        self.update_zero_flag(self.accumulator);
+        self.update_negative_flag(self.accumulator);
     }
 
     fn arithmetic_shift_left(&mut self) {
@@ -1123,60 +1131,80 @@ impl Cpu {
         todo!();
     }
 
-    fn decrement_memory(&mut self) {
-        todo!();
+    fn decrement_memory(&mut self, operand: u8) {
+        self.memory[operand as usize] -= 1;
+        self.update_zero_flag(self.memory[operand as usize]);
+        self.update_negative_flag(self.memory[operand as usize]);
     }
 
-    fn exclusive_or(&mut self) {
-        todo!();
+    fn exclusive_or(&mut self, operand: u8) {
+        self.accumulator ^= self.memory[operand as usize];
+        self.update_zero_flag(self.accumulator);
+        self.update_negative_flag(self.accumulator);
     }
 
-    fn increment_memory(&mut self) {
-        todo!();
+    fn increment_memory(&mut self, operand: u8) {
+        self.memory[operand as usize] += 1;
+        self.update_zero_flag(self.memory[operand as usize]);
+        self.update_negative_flag(self.memory[operand as usize]);
     }
 
-    fn jump(&mut self) {
-        todo!();
+    fn jump(&mut self, operand: u8) {
+        self.program_counter = operand as u16;
     }
 
     fn jump_to_subroutine(&mut self) {
         todo!();
     }
 
-    fn load_accumulator(&mut self) {
-        todo!();
+    fn load_accumulator(&mut self, operand: u8) {
+        self.accumulator = self.memory[operand as usize];
+        self.update_zero_flag(self.accumulator);
+        self.update_negative_flag(self.accumulator);
     }
 
-    fn load_x_register(&mut self) {
-        todo!();
+    fn load_x_register(&mut self, operand: u8) {
+        self.index_x = self.memory[operand as usize];
+        self.update_zero_flag(self.index_x);
+        self.update_negative_flag(self.index_x);
     }
 
-    fn load_y_register(&mut self) {
-        todo!();
+    fn load_y_register(&mut self, operand: u8) {
+        self.index_y = self.memory[operand as usize];
+        self.update_zero_flag(self.index_y);
+        self.update_negative_flag(self.index_y);
     }
 
     fn logical_shift_right(&mut self) {
         todo!();
     }
 
-    fn logical_inclusive_or(&mut self) {
-        todo!();
+    fn logical_inclusive_or(&mut self, operand: u8) {
+        self.accumulator |= self.memory[operand as usize];
+        self.update_zero_flag(self.accumulator);
+        self.update_negative_flag(self.accumulator);
     }
 
     fn push_accumulator(&mut self) {
-        todo!();
+        self.memory[self.stack_pointer as usize] = self.accumulator;
+        self.stack_pointer -= 1;
     }
 
     fn push_processor_status(&mut self) {
-        todo!();
+        self.memory[self.stack_pointer as usize] = self.processor_status;
+        self.stack_pointer -= 1;
     }
 
     fn pull_accumulator(&mut self) {
-        todo!();
+        self.accumulator = self.memory[self.stack_pointer as usize];
+        self.update_zero_flag(self.accumulator);
+        self.update_negative_flag(self.accumulator);
+        self.stack_pointer += 1;
     }
 
     fn pull_processor_status(&mut self) {
-        todo!();
+        self.processor_status = self.memory[self.stack_pointer as usize];
+        self.stack_pointer += 1;
     }
 
     fn rotate_left(&mut self) {
@@ -1188,27 +1216,31 @@ impl Cpu {
     }
 
     fn return_from_interrupt(&mut self) {
-        todo!();
+        self.processor_status = self.memory[self.stack_pointer as usize];
+        self.stack_pointer += 1;
+        self.program_counter = self.memory[self.stack_pointer as usize] as u16;
+        self.stack_pointer += 1;
     }
 
     fn return_from_subroutine(&mut self) {
-        todo!();
+        self.program_counter = self.memory[self.stack_pointer as usize] as u16 - 1;
+        self.stack_pointer += 1;
     }
 
     fn subtract_with_carry(&mut self) {
         todo!();
     }
 
-    fn store_accumulator(&mut self) {
-        todo!();
+    fn store_accumulator(&mut self, operand: u8) {
+        self.memory[operand as usize] = self.accumulator;
     }
 
-    fn store_x_register(&mut self) {
-        todo!();
+    fn store_x_register(&mut self, operand: u8) {
+        self.memory[operand as usize] = self.index_x;
     }
 
-    fn store_y_register(&mut self) {
-        todo!();
+    fn store_y_register(&mut self, operand: u8) {
+        self.memory[operand as usize] = self.index_y;
     }
 
     fn decrement_x_register(&mut self) {
@@ -1303,51 +1335,51 @@ impl Cpu {
         self.update_negative_flag(self.accumulator);
     }
 
-    fn branch_if_carry_clear(&mut self, displacement: u8) {
+    fn branch_if_carry_clear(&mut self, operand: u8) {
         if self.processor_status & 0b0000_0001 == 0 {
-            self.program_counter += displacement as u16;
+            self.program_counter += operand as u16;
         }
     }
 
-    fn branch_if_carry_set(&mut self, displacement: u8) {
+    fn branch_if_carry_set(&mut self, operand: u8) {
         if self.processor_status & 0b0000_0001 != 0 {
-            self.program_counter += displacement as u16;
+            self.program_counter += operand as u16;
         }
     }
 
-    fn branch_if_equal(&mut self, displacement: u8) {
+    fn branch_if_equal(&mut self, operand: u8) {
         if self.processor_status & 0b0000_0010 != 0 {
-            self.program_counter += displacement as u16;
+            self.program_counter += operand as u16;
         }
     }
 
-    fn branch_if_minus(&mut self, displacement: u8) {
+    fn branch_if_minus(&mut self, operand: u8) {
         if self.processor_status & 0b1000_0000 != 0 {
-            self.program_counter += displacement as u16;
+            self.program_counter += operand as u16;
         }
     }
 
-    fn branch_if_not_equal(&mut self, displacement: u8) {
+    fn branch_if_not_equal(&mut self, operand: u8) {
         if self.processor_status & 0b0000_0010 == 0 {
-            self.program_counter += displacement as u16;
+            self.program_counter += operand as u16;
         }
     }
 
-    fn branch_if_positive(&mut self, displacement: u8) {
+    fn branch_if_positive(&mut self, operand: u8) {
         if self.processor_status & 0b1000_0000 == 0 {
-            self.program_counter += displacement as u16;
+            self.program_counter += operand as u16;
         }
     }
 
-    fn branch_if_overflow_clear(&mut self, displacement: u8) {
+    fn branch_if_overflow_clear(&mut self, operand: u8) {
         if self.processor_status & 0b0100_0000 == 0 {
-            self.program_counter += displacement as u16;
+            self.program_counter += operand as u16;
         }
     }
 
-    fn branch_if_overflow_set(&mut self, displacement: u8) {
+    fn branch_if_overflow_set(&mut self, operand: u8) {
         if self.processor_status & 0b0100_0000 != 0 {
-            self.program_counter += displacement as u16;
+            self.program_counter += operand as u16;
         }
     }
 
